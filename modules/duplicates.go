@@ -30,7 +30,7 @@ func FindDuplicates(dirPath *string) {
 		if isImage(path) == true {
 			hash, _ := hashFile(path)
 
-			if checkForCollision(hashMap, hash) == true {
+			if isCollision(hashMap, hash) == true {
 				table.AddRow(path, hashMap[hash])
 				collisionCount += 1
 
@@ -52,7 +52,7 @@ func FindDuplicates(dirPath *string) {
 
 /* -------------------- Private -------------------- */
 
-func checkForCollision(hashMap map[string]string, hash string) bool {
+func isCollision(hashMap map[string]string, hash string) bool {
 	if _, ok := hashMap[hash]; ok {
 		return true
 	}

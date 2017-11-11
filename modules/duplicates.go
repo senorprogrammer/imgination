@@ -8,6 +8,7 @@ import (
 	"os"
 
 	"github.com/devedge/imagehash"
+	"github.com/fatih/color"
 	"github.com/gosuri/uitable"
 	"gopkg.in/h2non/filetype.v1"
 	"path/filepath"
@@ -19,18 +20,23 @@ func FindDuplicates(dirPath *string) {
 	table := uitable.New()
 	table.MaxColWidth = 80
 
+	green := color.New(color.FgGreen).SprintFunc()
+	red := color.New(color.FgRed).SprintFunc()
+
 	hashMap := make(map[string]string)
 
 	collisionCount := 0
 	filepath.Walk(*dirPath, func(path string, f os.FileInfo, err error) error {
-		isImg := isImage(path)
-
-		if isImg == true {
+		if isImage(path) == true {
 			hash, _ := hashFile(path)
 
 			if checkForCollision(hashMap, hash) == true {
 				table.AddRow(path, hashMap[hash])
 				collisionCount += 1
+
+				fmt.Printf("%s", red("D"))
+			} else {
+				fmt.Printf("%s", green("*"))
 			}
 
 			hashMap[hash] = path
@@ -39,6 +45,7 @@ func FindDuplicates(dirPath *string) {
 		return nil
 	})
 
+	fmt.Println("\n")
 	fmt.Printf("Found %d duplicates\n\n", collisionCount)
 	fmt.Println(table)
 }

@@ -31,7 +31,7 @@ func FindDuplicates(dirPath *string) {
 			hash, _ := hashFile(path)
 
 			if isCollision(hashMap, hash) == true {
-				table.AddRow(path, hashMap[hash])
+				table.AddRow(hashMap[hash], path)
 				collisionCount += 1
 
 				fmt.Printf("%s", red("D"))

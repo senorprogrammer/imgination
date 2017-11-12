@@ -8,4 +8,4 @@ Command-line image management utilities
 Recursively scans directories for images, finding and reporting on duplicates.
 
 ## Usage
-`imgination --dir=/Users/bob/Pictures
+`imgination --dir=/Users/bob/Pictures`

@@ -2,12 +2,10 @@ package modules
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
+	"path/filepath"
 
 	. "github.com/logrusorgru/aurora"
-	"gopkg.in/h2non/filetype.v1"
-	"path/filepath"
 )
 
 /* -------------------- Public -------------------- */
@@ -18,7 +16,7 @@ func FindDuplicates(dirPath *string) {
 	hashMap := make(map[string]CollisionTable)
 
 	filepath.Walk(*dirPath, func(path string, f os.FileInfo, err error) error {
-		if isImage(path) == true {
+		if IsImage(path) == true {
 			imgFile := NewImageFile(path)
 
 			if isCollision(hashMap, imgFile) == true {
@@ -37,7 +35,7 @@ func FindDuplicates(dirPath *string) {
 		return nil
 	})
 
-	render(hashMap)
+	renderDuplicationResults(hashMap)
 }
 
 /* -------------------- Private -------------------- */
@@ -59,16 +57,7 @@ func isCollision(hashMap map[string]CollisionTable, imgFile *ImageFile) bool {
 	return false
 }
 
-func isImage(path string) bool {
-	buf, _ := ioutil.ReadFile(path)
-
-	if filetype.IsImage(buf) {
-		return true
-	}
-	return false
-}
-
-func render(hashMap map[string]CollisionTable) {
+func renderDuplicationResults(hashMap map[string]CollisionTable) {
 	fmt.Println("\n")
 	fmt.Printf("Found %d duplicates\n\n", collisionCount(hashMap))
 

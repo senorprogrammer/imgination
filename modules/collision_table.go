@@ -16,6 +16,8 @@ func NewCollisionTable(imgFile *ImageFile) CollisionTable {
 	return collTable
 }
 
+/* -------------------- Public Functions -------------------- */
+
 func (collTable *CollisionTable) Append(imgFile *ImageFile) {
 	collTable.ImageFiles = append(collTable.ImageFiles, imgFile)
 }

@@ -5,32 +5,15 @@ import (
 	"io/ioutil"
 	"os"
 
-	"github.com/fatih/color"
-	"github.com/gosuri/uitable"
+	. "github.com/logrusorgru/aurora"
 	"gopkg.in/h2non/filetype.v1"
 	"path/filepath"
 )
 
 /* -------------------- Public -------------------- */
 
-type CollisionTable struct {
-	Hash       string
-	ImageFiles []*ImageFile
-}
-
-func (collTable *CollisionTable) Append(imgFile *ImageFile) {
-	collTable.ImageFiles = append(collTable.ImageFiles, imgFile)
-}
-
-func (collTable *CollisionTable) HasCollisions() bool {
-	return len(collTable.ImageFiles) > 1
-}
-
-/* -------------------- Main -------------------- */
-
 func FindDuplicates(dirPath *string) {
-	green := color.New(color.FgGreen).SprintFunc()
-	red := color.New(color.FgRed).SprintFunc()
+	fmt.Printf("Scanning for duplicates in %s...\n", *dirPath)
 
 	hashMap := make(map[string]CollisionTable)
 
@@ -38,19 +21,16 @@ func FindDuplicates(dirPath *string) {
 		if isImage(path) == true {
 			imgFile := NewImageFile(path)
 
-			if isCollision(hashMap, imgFile.Hash) == true {
+			if isCollision(hashMap, imgFile) == true {
 				collTable := hashMap[imgFile.Hash]
 				collTable.Append(imgFile)
 				hashMap[imgFile.Hash] = collTable
 
-				fmt.Printf("%s", red("D"))
+				fmt.Print(Red("D"))
 			} else {
-				hashMap[imgFile.Hash] = CollisionTable{
-					Hash:       imgFile.Hash,
-					ImageFiles: []*ImageFile{imgFile},
-				}
+				hashMap[imgFile.Hash] = NewCollisionTable(imgFile)
 
-				fmt.Printf("%s", green("*"))
+				fmt.Print(Green("*"))
 			}
 		}
 
@@ -58,7 +38,6 @@ func FindDuplicates(dirPath *string) {
 	})
 
 	render(hashMap)
-
 }
 
 /* -------------------- Private -------------------- */
@@ -67,16 +46,14 @@ func collisionCount(hashMap map[string]CollisionTable) int {
 	count := 0
 
 	for _, collTable := range hashMap {
-		if collTable.HasCollisions() {
-			count++
-		}
+		count = count + collTable.CollisionCount()
 	}
 
 	return count
 }
 
-func isCollision(hashMap map[string]CollisionTable, hash string) bool {
-	if _, ok := hashMap[hash]; ok {
+func isCollision(hashMap map[string]CollisionTable, imgFile *ImageFile) bool {
+	if _, ok := hashMap[imgFile.Hash]; ok {
 		return true
 	}
 	return false
@@ -92,16 +69,12 @@ func isImage(path string) bool {
 }
 
 func render(hashMap map[string]CollisionTable) {
-	table := uitable.New()
-	table.MaxColWidth = 80
+	fmt.Println("\n")
+	fmt.Printf("Found %d duplicates\n\n", collisionCount(hashMap))
 
 	for _, collTable := range hashMap {
 		if collTable.HasCollisions() {
-			table.AddRow(collTable.Hash)
+			fmt.Println(collTable.Paths())
 		}
 	}
-
-	fmt.Println("\n")
-	fmt.Printf("Found %d duplicates\n\n", collisionCount(hashMap))
-	fmt.Println(table)
 }

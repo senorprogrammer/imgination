@@ -7,8 +7,12 @@ import (
 )
 
 func main() {
-	dirPath := flag.String("dir", "", "Path to image directory")
+	dirPath := flag.String("dir", "./", "Path to image directory")
+	feature := flag.String("func", "dup", "Which function to execute")
 	flag.Parse()
 
-	modules.FindDuplicates(dirPath)
+	switch *feature {
+	case "dup":
+		modules.FindDuplicates(dirPath)
+	}
 }

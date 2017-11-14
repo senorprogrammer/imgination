@@ -27,7 +27,7 @@ func (collTable *CollisionTable) CollisionCount() int {
 }
 
 func (collTable *CollisionTable) HasCollisions() bool {
-	return len(collTable.ImageFiles) > 1
+	return collTable.CollisionCount() > 0
 }
 
 func (collTable *CollisionTable) Paths() string {

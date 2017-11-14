@@ -1,11 +1,16 @@
 # imgination
-Command-line image management utilities
+
+Command-line image management utilities. Recursively scans directories
+looking for images and reporting on them.
 
 ## Features
 
-### Duplication Detection
+### Duplicate Image Detection
 
-Recursively scans directories for images, finding and reporting on duplicates.
+#### Usage
+`imgination --dir=/Users/crash/Pictures --func=dup`
 
-## Usage
-`imgination --dir=/Users/bob/Pictures`
+### GPS Co-ordinate Detection
+
+#### Usage
+`imgination --dir=/Users/crash/Pictures --func=gps`

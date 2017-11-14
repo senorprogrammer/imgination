@@ -51,16 +51,18 @@ func IsImage(path string) bool {
 }
 
 func (imgFile *ImageFile) LatLon() (lat, lon float64) {
-	f, err := os.Open(imgFile.Path)
+	file, err := os.Open(imgFile.Path)
 	if err != nil {
 		return lat, lon
 	}
+	defer file.Close()
 
-	x, err := exif.Decode(f)
+	x, err := exif.Decode(file)
 	if err != nil {
 		return lat, lon
 	}
 
 	lat, lon, _ = x.LatLong()
+
 	return lat, lon
 }

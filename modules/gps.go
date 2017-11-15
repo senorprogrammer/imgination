@@ -4,10 +4,8 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-	// "strconv"
 
 	. "github.com/logrusorgru/aurora"
-	// "github.com/olekukonko/tablewriter"
 )
 
 func FindGps(dirPath *string) {
@@ -41,20 +39,4 @@ func renderGpsResults(imgArray []string) {
 	for _, path := range imgArray {
 		fmt.Println(path)
 	}
-
-	// table := tablewriter.NewWriter(os.Stdout)
-	// table.SetHeader([]string{"Image", "Lat", "Lon"})
-
-	// for _, imgFile := range imgArray {
-	// 	lat, lon := imgFile.LatLon()
-
-	// 	data := []string{
-	// 		imgFile.Path,
-	// 		strconv.FormatFloat(lat, 'f', -1, 64),
-	// 		strconv.FormatFloat(lon, 'f', -1, 64),
-	// 	}
-	// 	table.Append(data)
-	// }
-
-	// table.Render()
 }

@@ -22,11 +22,15 @@ func NewImageFile(path string) *ImageFile {
 		Path: path,
 	}
 
-	img, _ := imagehash.OpenImg(imgFile.Path)
-	imgFile.Image = img
+	img, err := imagehash.OpenImg(imgFile.Path)
+	if err == nil {
+		imgFile.Image = img
+	}
 
-	bytes, _ := imagehash.Ahash(imgFile.Image, 16)
-	imgFile.Hash = hex.EncodeToString(bytes)
+	bytes, err := imagehash.Ahash(imgFile.Image, 16)
+	if err == nil {
+		imgFile.Hash = hex.EncodeToString(bytes)
+	}
 
 	return &imgFile
 }
@@ -57,12 +61,12 @@ func (imgFile *ImageFile) LatLon() (lat, lon float64) {
 	}
 	defer file.Close()
 
-	x, err := exif.Decode(file)
+	ex, err := exif.Decode(file)
 	if err != nil {
 		return lat, lon
 	}
 
-	lat, lon, _ = x.LatLong()
+	lat, lon, _ = ex.LatLong()
 
 	return lat, lon
 }

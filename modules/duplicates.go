@@ -3,9 +3,10 @@ package modules
 import (
 	"fmt"
 	"os"
-	"path/filepath"
+	"sync"
 
 	. "github.com/logrusorgru/aurora"
+	"github.com/stretchr/powerwalk"
 )
 
 /* -------------------- Public -------------------- */
@@ -14,10 +15,17 @@ func FindDuplicates(dirPath *string) {
 	fmt.Printf("Scanning for duplicates in %s...\n", *dirPath)
 
 	hashMap := make(map[string]CollisionTable)
+	var hashMapLock sync.Mutex
 
-	filepath.Walk(*dirPath, func(path string, f os.FileInfo, err error) error {
+	powerwalk.Walk(*dirPath, func(path string, f os.FileInfo, err error) error {
 		if IsImage(path) == true {
 			imgFile := NewImageFile(path)
+
+			/*
+			* Powerwalk scans files concurrently. Lock the storage array for each write
+			 */
+			hashMapLock.Lock()
+			defer hashMapLock.Unlock()
 
 			if isCollision(hashMap, imgFile) == true {
 				collTable := hashMap[imgFile.Hash]

@@ -3,19 +3,27 @@ package modules
 import (
 	"fmt"
 	"os"
-	"path/filepath"
+	"sync"
 
 	. "github.com/logrusorgru/aurora"
+	"github.com/stretchr/powerwalk"
 )
 
 func FindGps(dirPath *string) {
 	fmt.Printf("Scanning for locations in %s...\n", *dirPath)
 
 	imgArray := []string{}
+	var imgArrayLock sync.Mutex
 
-	filepath.Walk(*dirPath, func(path string, f os.FileInfo, err error) error {
+	powerwalk.Walk(*dirPath, func(path string, f os.FileInfo, err error) error {
 		if IsImage(path) == true {
 			imgFile := NewImageFile(path)
+
+			/*
+			* Powerwalk scans files concurrently. Lock the storage array for each write
+			 */
+			imgArrayLock.Lock()
+			defer imgArrayLock.Unlock()
 
 			if imgFile.HasGPS() == true {
 				imgArray = append(imgArray, imgFile.Path)

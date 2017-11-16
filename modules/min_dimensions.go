@@ -9,8 +9,8 @@ import (
 	"github.com/stretchr/powerwalk"
 )
 
-func FindGps(dirPath *string) {
-	fmt.Printf("Scanning %s for locations...\n", *dirPath)
+func FindMinimumDimensions(dirPath *string, minWidth, minHeight *int) {
+	fmt.Printf("Scanning %s for minimum dimensions (%d, %d)...\n", *dirPath, *minWidth, *minHeight)
 
 	imgArray := []string{}
 	var imgArrayLock sync.Mutex
@@ -25,10 +25,10 @@ func FindGps(dirPath *string) {
 			imgArrayLock.Lock()
 			defer imgArrayLock.Unlock()
 
-			if imgFile.HasGPS() == true {
+			if imgFile.BelowMinimumDimensions(minWidth, minHeight) == true {
 				imgArray = append(imgArray, imgFile.Path)
 
-				fmt.Print(Red("G"))
+				fmt.Print(Red("S"))
 			} else {
 				fmt.Print(Green("*"))
 			}
@@ -37,10 +37,10 @@ func FindGps(dirPath *string) {
 		return nil
 	})
 
-	renderGpsResults(imgArray)
+	renderMinDimResults(imgArray)
 }
 
-func renderGpsResults(imgArray []string) {
+func renderMinDimResults(imgArray []string) {
 	fmt.Println("\n")
 	fmt.Printf("Found %d images\n\n", len(imgArray))
 

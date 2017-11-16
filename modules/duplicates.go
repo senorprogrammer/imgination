@@ -12,7 +12,7 @@ import (
 /* -------------------- Public -------------------- */
 
 func FindDuplicates(dirPath *string) {
-	fmt.Printf("Scanning for duplicates in %s...\n", *dirPath)
+	fmt.Printf("Scanning %s for duplicates...\n", *dirPath)
 
 	hashMap := make(map[string]CollisionTable)
 	var hashMapLock sync.Mutex
@@ -20,6 +20,7 @@ func FindDuplicates(dirPath *string) {
 	powerwalk.Walk(*dirPath, func(path string, f os.FileInfo, err error) error {
 		if IsImage(path) == true {
 			imgFile := NewImageFile(path)
+			imgFile.GenerateHash()
 
 			/*
 			* Powerwalk scans files concurrently. Lock the storage array for each write

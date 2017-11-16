@@ -12,23 +12,20 @@ import (
 func FindGps(dirPath *string) {
 	fmt.Printf("Scanning %s for locations...\n", *dirPath)
 
-	imgArray := []string{}
-	var imgArrayLock sync.Mutex
+	searchResult := SearchResult{}
+	var lock sync.Mutex
 
 	powerwalk.Walk(*dirPath, func(path string, f os.FileInfo, err error) error {
 		if IsImage(path) == true {
 			imgFile := NewImageFile(path)
 
-			/*
-			* Powerwalk scans files concurrently. Lock the storage array for each write
-			 */
-			imgArrayLock.Lock()
-			defer imgArrayLock.Unlock()
+			lock.Lock()
+			defer lock.Unlock()
 
 			if imgFile.HasGPS() == true {
-				imgArray = append(imgArray, imgFile.Path)
+				searchResult.Append(imgFile.Path)
 
-				fmt.Print(Red("G"))
+				fmt.Print(Red("*"))
 			} else {
 				fmt.Print(Green("*"))
 			}
@@ -37,14 +34,5 @@ func FindGps(dirPath *string) {
 		return nil
 	})
 
-	renderGpsResults(imgArray)
-}
-
-func renderGpsResults(imgArray []string) {
-	fmt.Println("\n")
-	fmt.Printf("Found %d images\n\n", len(imgArray))
-
-	for _, path := range imgArray {
-		fmt.Println(path)
-	}
+	Render(&searchResult)
 }

@@ -23,15 +23,6 @@ func NewImageFile(path string) *ImageFile {
 		Path: path,
 	}
 
-	/*
-	* TODO: Figure out why Dimensions doesn't work when this is commented out
-	* This _should_ have no impact on that
-	 */
-	img, err := imagehash.OpenImg(imgFile.Path)
-	if err == nil {
-		imgFile.Image = img
-	}
-
 	return &imgFile
 }
 
@@ -55,6 +46,8 @@ func (imgFile *ImageFile) BelowMinimumDimensions(minWidth, minHeight *int) bool 
 }
 
 func (imgFile *ImageFile) GenerateHash() {
+	imgFile.LoadImage()
+
 	bytes, err := imagehash.Ahash(imgFile.Image, 16)
 	if err == nil {
 		imgFile.Hash = hex.EncodeToString(bytes)
@@ -63,6 +56,8 @@ func (imgFile *ImageFile) GenerateHash() {
 }
 
 func (imgFile *ImageFile) Dimensions() (width, height int) {
+	imgFile.LoadImage()
+
 	size := imgFile.Image.Bounds().Size()
 	width, height = size.X, size.Y
 
@@ -95,3 +90,14 @@ func (imgFile *ImageFile) LatLon() (lat, lon float64) {
 }
 
 /* -------------------- Private Functions -------------------- */
+
+func (imgFile *ImageFile) LoadImage() {
+	if imgFile.Image == nil {
+		img, err := imagehash.OpenImg(imgFile.Path)
+		if err != nil {
+			return
+		} else {
+			imgFile.Image = img
+		}
+	}
+}

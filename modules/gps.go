@@ -34,5 +34,6 @@ func FindGps(dirPath *string) {
 		return nil
 	})
 
-	Render(&searchResult)
+	// Render(&searchResult)
+	RenderTui(&searchResult)
 }

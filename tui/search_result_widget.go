@@ -2,6 +2,7 @@ package tui
 
 import (
 	"fmt"
+	_ "strconv"
 
 	"github.com/jroimartin/gocui"
 )
@@ -47,16 +48,12 @@ func (widget *SearchResultWidget) Layout(g *gocui.Gui) error {
 		view.Wrap = false
 
 		// Key bindings
-		if err := g.SetKeybinding(widget.name, gocui.KeyArrowUp, gocui.ModNone, widget.cursorUp); err != nil {
+		if err := g.SetKeybinding(widget.name, gocui.KeyArrowUp, gocui.ModNone, widget.selectPrev); err != nil {
 			panic(err)
 		}
 
-		if err := g.SetKeybinding(widget.name, gocui.KeyArrowDown, gocui.ModNone, widget.cursorDown); err != nil {
+		if err := g.SetKeybinding(widget.name, gocui.KeyArrowDown, gocui.ModNone, widget.selectNext); err != nil {
 			panic(err)
-		}
-
-		if err := g.SetKeybinding(widget.name, gocui.KeyEnter, gocui.ModNone, widget.selectFile); err != nil {
-			return err
 		}
 
 		g.SetCurrentView(widget.name)
@@ -70,13 +67,30 @@ func (widget *SearchResultWidget) Layout(g *gocui.Gui) error {
 	return nil
 }
 
+func (widget *SearchResultWidget) selectNext(g *gocui.Gui, v *gocui.View) error {
+	err := widget.cursorDown(g, v)
+	if err == nil && widget.selected < len(widget.body)-1 {
+		widget.selected = widget.selected + 1
+		widget.selectFile(g, v)
+	}
+	return err
+}
+
+func (widget *SearchResultWidget) selectPrev(g *gocui.Gui, v *gocui.View) error {
+	err := widget.cursorUp(g, v)
+	if err == nil && widget.selected != 0 {
+		widget.selected = widget.selected - 1
+		widget.selectFile(g, v)
+	}
+	return err
+}
+
 func (widget *SearchResultWidget) cursorUp(g *gocui.Gui, v *gocui.View) error {
 	if v != nil {
 		ox, oy := v.Origin()
 		cx, cy := v.Cursor()
 		if err := v.SetCursor(cx, cy-1); err != nil && oy > 0 {
 			if err := v.SetOrigin(ox, oy-1); err != nil {
-				widget.selected = oy - 1
 				return err
 			}
 		}
@@ -86,9 +100,10 @@ func (widget *SearchResultWidget) cursorUp(g *gocui.Gui, v *gocui.View) error {
 
 func (widget *SearchResultWidget) cursorDown(g *gocui.Gui, v *gocui.View) error {
 	if v != nil {
+		/* Returns the current position of the cursor */
 		cx, cy := v.Cursor()
 
-		/* Don't go off the bottom of the list */
+		/* Can't move down any further; don't go off the bottom of the list */
 		if cy >= len(widget.body)-1 {
 			return nil
 		}
@@ -96,7 +111,6 @@ func (widget *SearchResultWidget) cursorDown(g *gocui.Gui, v *gocui.View) error 
 		if err := v.SetCursor(cx, cy+1); err != nil {
 			ox, oy := v.Origin()
 			if err := v.SetOrigin(ox, oy+1); err != nil {
-				widget.selected = oy + 1
 				return err
 			}
 		}
@@ -106,6 +120,8 @@ func (widget *SearchResultWidget) cursorDown(g *gocui.Gui, v *gocui.View) error 
 
 /* Tells the info view to display info about the selected file */
 func (widget *SearchResultWidget) selectFile(g *gocui.Gui, v *gocui.View) error {
-	widget.handler(g, "cats")
+	path := widget.body[widget.selected]
+	// path := strconv.Itoa(widget.selected)
+	widget.handler(g, path)
 	return nil
 }

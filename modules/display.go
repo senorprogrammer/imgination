@@ -20,6 +20,14 @@ func Render(searchResult *SearchResult) {
 
 /* -------------------- TUI -------------------- */
 
+type WidgetManagers struct {
+	ConWidget          *tui.ConsoleWidget
+	InfoWidget         *tui.InfoWidget
+	SearchResultWidget *tui.SearchResultWidget
+}
+
+var widgetMan = WidgetManagers{}
+
 func RenderTui(searchResult *SearchResult) {
 	g, err := gocui.NewGui(gocui.OutputNormal)
 	if err != nil {
@@ -28,11 +36,11 @@ func RenderTui(searchResult *SearchResult) {
 	defer g.Close()
 
 	/* Build the widgets that define the interface */
-	srcWidget := tui.NewSearchResultWidget("files", " Files ", searchResult.Results, displayFile)
-	infoWidget := tui.NewInfoWidget("info", " Info ", "")
-	conWidget := tui.NewConsoleWidget("console", " Options ")
+	widgetMan.ConWidget = tui.NewConsoleWidget("console", " Options ")
+	widgetMan.InfoWidget = tui.NewInfoWidget("info", " Info ", "")
+	widgetMan.SearchResultWidget = tui.NewSearchResultWidget("files", " Files ", searchResult.Results, displayFile)
 
-	g.SetManager(srcWidget, infoWidget, conWidget)
+	g.SetManager(widgetMan.ConWidget, widgetMan.InfoWidget, widgetMan.SearchResultWidget)
 
 	/* Add keybindings */
 	if err := g.SetKeybinding("", gocui.KeyCtrlC, gocui.ModNone, quit); err != nil {
@@ -46,13 +54,7 @@ func RenderTui(searchResult *SearchResult) {
 }
 
 func displayFile(g *gocui.Gui, path string) {
-	// view, err := g.View("info")
-	// if err == nil {
-	// 	// Tell the widget to update it's path value with path
-
-	// } else {
-	// 	panic(err)
-	// }
+	widgetMan.InfoWidget.Path = path
 }
 
 func quit(g *gocui.Gui, v *gocui.View) error {

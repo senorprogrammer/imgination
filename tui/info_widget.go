@@ -11,14 +11,14 @@ type InfoWidget struct {
 	title string
 	x, y  int
 	w, h  int
-	path  string
+	Path  string
 }
 
 func NewInfoWidget(name, title, path string) *InfoWidget {
 	widget := InfoWidget{
 		name:  name,
 		title: title,
-		path:  path,
+		Path:  path,
 	}
 
 	return &widget
@@ -34,11 +34,17 @@ func (widget *InfoWidget) Layout(g *gocui.Gui) error {
 
 	view, err := g.SetView(widget.name, widget.x, widget.y, widget.w, widget.h)
 	if err != gocui.ErrUnknownView {
-		return err
+		// I don't understand this, because the first time it's created it'll be this error type
+		// Foreer after it'll be nil
+		// fmt.Fprintln(view, err)
+		// return err
 	} else {
 		view.Title = " Info "
 		view.Wrap = false
 	}
+
+	// fmt.Fprintln(view, "cats")
+	// fmt.Fprintln(view, widget.Path)
 
 	return nil
 }

@@ -6,6 +6,7 @@ import (
 	"sync"
 
 	. "github.com/logrusorgru/aurora"
+	"github.com/senorprogrammer/imgination/image"
 	"github.com/stretchr/powerwalk"
 )
 
@@ -16,8 +17,8 @@ func FindDuplicates(dirPath *string) {
 	var lock sync.Mutex
 
 	powerwalk.Walk(*dirPath, func(path string, f os.FileInfo, err error) error {
-		if IsImage(path) == true {
-			imgFile := NewImageFile(path)
+		if image.IsImage(path) == true {
+			imgFile := image.NewImageFile(path)
 			imgFile.GenerateHash()
 
 			lock.Lock()
@@ -60,7 +61,7 @@ func collisionCount(hashMap map[string]CollisionTable) int {
 	return count
 }
 
-func isCollision(hashMap map[string]CollisionTable, imgFile *ImageFile) bool {
+func isCollision(hashMap map[string]CollisionTable, imgFile *image.ImageFile) bool {
 	if _, ok := hashMap[imgFile.Hash]; ok {
 		return true
 	}

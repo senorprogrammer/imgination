@@ -1,16 +1,18 @@
 package modules
 
-import ()
+import (
+	"github.com/senorprogrammer/imgination/image"
+)
 
 type CollisionTable struct {
 	Hash       string
-	ImageFiles []*ImageFile
+	ImageFiles []*image.ImageFile
 }
 
-func NewCollisionTable(imgFile *ImageFile) CollisionTable {
+func NewCollisionTable(imgFile *image.ImageFile) CollisionTable {
 	collTable := CollisionTable{
 		Hash:       imgFile.Hash,
-		ImageFiles: []*ImageFile{imgFile},
+		ImageFiles: []*image.ImageFile{imgFile},
 	}
 
 	return collTable
@@ -18,7 +20,7 @@ func NewCollisionTable(imgFile *ImageFile) CollisionTable {
 
 /* -------------------- Public Functions -------------------- */
 
-func (collTable *CollisionTable) Append(imgFile *ImageFile) {
+func (collTable *CollisionTable) Append(imgFile *image.ImageFile) {
 	collTable.ImageFiles = append(collTable.ImageFiles, imgFile)
 }
 

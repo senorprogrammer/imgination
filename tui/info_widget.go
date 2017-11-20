@@ -5,6 +5,7 @@ import (
 
 	"github.com/dustin/go-humanize"
 	"github.com/jroimartin/gocui"
+	"github.com/senorprogrammer/imgination/image"
 )
 
 type InfoWidget struct {
@@ -13,7 +14,7 @@ type InfoWidget struct {
 	x, y      int
 	w, h      int
 	Path      string
-	ImageStat *ImageStat
+	ImageFile *image.ImageFile
 }
 
 func NewInfoWidget(name, title, path string) *InfoWidget {
@@ -21,7 +22,7 @@ func NewInfoWidget(name, title, path string) *InfoWidget {
 		name:      name,
 		title:     title,
 		Path:      path,
-		ImageStat: &ImageStat{},
+		ImageFile: &image.ImageFile{},
 	}
 
 	return &widget
@@ -29,8 +30,10 @@ func NewInfoWidget(name, title, path string) *InfoWidget {
 
 func (widget *InfoWidget) DisplayFile(path string) {
 	widget.Path = path
-	stat := NewImageStat(widget.Path)
-	widget.ImageStat = stat
+	imgFile := image.NewImageFile(widget.Path)
+	widget.ImageFile = imgFile
+	// stat := NewImageStat(widget.Path)
+	// widget.ImageStat = stat
 }
 
 func (widget *InfoWidget) Layout(g *gocui.Gui) error {
@@ -43,13 +46,13 @@ func (widget *InfoWidget) Layout(g *gocui.Gui) error {
 
 	// Displays the image stats widget
 	statsView, _ := g.SetView("stats", widget.x, widget.y, widget.w, 6)
-	statsView.Title = fmt.Sprintf(" %s ", widget.ImageStat.Name)
+	statsView.Title = fmt.Sprintf(" %s ", widget.ImageFile.Name)
 
 	statsView.Clear()
 	fmt.Fprintln(statsView, "\n")
-	fmt.Fprintf(statsView, "%8s: %8d\n", "Width", widget.ImageStat.Width)
-	fmt.Fprintf(statsView, "%8s: %8d\n", "Height", widget.ImageStat.Height)
-	fmt.Fprintf(statsView, "%8s: %8s\n", "Size", humanize.Bytes(uint64(widget.ImageStat.Size)))
+	fmt.Fprintf(statsView, "%8s: %8d\n", "Width", widget.ImageFile.Width)
+	fmt.Fprintf(statsView, "%8s: %8d\n", "Height", widget.ImageFile.Height)
+	fmt.Fprintf(statsView, "%8s: %8s\n", "Size", humanize.Bytes(uint64(widget.ImageFile.Size)))
 
 	// Displays the image preview widget
 	infoView, _ := g.SetView(widget.name, widget.x, widget.y+7, widget.w, widget.h)
@@ -58,7 +61,6 @@ func (widget *InfoWidget) Layout(g *gocui.Gui) error {
 
 	infoView.Clear()
 	fmt.Fprint(infoView, InlineImage(infoView, widget.Path))
-	// fmt.Print(InlineImage(infoView, widget.Path))
 
 	return nil
 }

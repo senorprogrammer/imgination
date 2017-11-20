@@ -1,4 +1,4 @@
-package modules
+package image
 
 import (
 	"encoding/hex"

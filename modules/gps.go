@@ -6,6 +6,7 @@ import (
 	"sync"
 
 	. "github.com/logrusorgru/aurora"
+	"github.com/senorprogrammer/imgination/image"
 	"github.com/stretchr/powerwalk"
 )
 
@@ -16,8 +17,8 @@ func FindGps(dirPath *string) {
 	var lock sync.Mutex
 
 	powerwalk.Walk(*dirPath, func(path string, f os.FileInfo, err error) error {
-		if IsImage(path) == true {
-			imgFile := NewImageFile(path)
+		if image.IsImage(path) == true {
+			imgFile := image.NewImageFile(path)
 
 			lock.Lock()
 			defer lock.Unlock()

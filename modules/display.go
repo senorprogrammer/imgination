@@ -54,7 +54,7 @@ func RenderTui(searchResult *SearchResult) {
 }
 
 func displayFile(g *gocui.Gui, path string) {
-	widgetMan.InfoWidget.Path = path
+	widgetMan.InfoWidget.DisplayFile(path)
 }
 
 func quit(g *gocui.Gui, v *gocui.View) error {

@@ -67,24 +67,6 @@ func (widget *SearchResultWidget) Layout(g *gocui.Gui) error {
 	return nil
 }
 
-func (widget *SearchResultWidget) selectNext(g *gocui.Gui, v *gocui.View) error {
-	err := widget.cursorDown(g, v)
-	if err == nil && widget.selected < len(widget.body)-1 {
-		widget.selected = widget.selected + 1
-		widget.selectFile(g, v)
-	}
-	return err
-}
-
-func (widget *SearchResultWidget) selectPrev(g *gocui.Gui, v *gocui.View) error {
-	err := widget.cursorUp(g, v)
-	if err == nil && widget.selected != 0 {
-		widget.selected = widget.selected - 1
-		widget.selectFile(g, v)
-	}
-	return err
-}
-
 func (widget *SearchResultWidget) cursorUp(g *gocui.Gui, v *gocui.View) error {
 	if v != nil {
 		ox, oy := v.Origin()
@@ -121,7 +103,24 @@ func (widget *SearchResultWidget) cursorDown(g *gocui.Gui, v *gocui.View) error 
 /* Tells the info view to display info about the selected file */
 func (widget *SearchResultWidget) selectFile(g *gocui.Gui, v *gocui.View) error {
 	path := widget.body[widget.selected]
-	// path := strconv.Itoa(widget.selected)
 	widget.handler(g, path)
 	return nil
+}
+
+func (widget *SearchResultWidget) selectNext(g *gocui.Gui, v *gocui.View) error {
+	err := widget.cursorDown(g, v)
+	if err == nil && widget.selected < len(widget.body)-1 {
+		widget.selected = widget.selected + 1
+		widget.selectFile(g, v)
+	}
+	return err
+}
+
+func (widget *SearchResultWidget) selectPrev(g *gocui.Gui, v *gocui.View) error {
+	err := widget.cursorUp(g, v)
+	if err == nil && widget.selected != 0 {
+		widget.selected = widget.selected - 1
+		widget.selectFile(g, v)
+	}
+	return err
 }

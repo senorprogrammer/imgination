@@ -38,7 +38,7 @@ func RenderTui(searchResult *SearchResult) {
 	/* Build the widgets that define the interface */
 	widgetMan.ConWidget = tui.NewConsoleWidget("console", " Options ")
 	widgetMan.InfoWidget = tui.NewInfoWidget("info", " Info ", "")
-	widgetMan.SearchResultWidget = tui.NewSearchResultWidget("files", " Files ", searchResult.Results, displayFile)
+	widgetMan.SearchResultWidget = tui.NewSearchResultWidget("files", " Files ", searchResult.Sorted(), displayFile)
 
 	g.SetManager(widgetMan.ConWidget, widgetMan.InfoWidget, widgetMan.SearchResultWidget)
 

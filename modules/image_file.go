@@ -13,15 +13,27 @@ import (
 )
 
 type ImageFile struct {
-	Hash  string
-	Image image.Image
-	Path  string
+	Hash   string
+	Height int
+	Image  image.Image
+	Name   string
+	Path   string
+	Size   int64
+	Width  int
 }
 
 func NewImageFile(path string) *ImageFile {
 	imgFile := ImageFile{
-		Path: path,
+		Hash:   "",
+		Height: 0,
+		Name:   "",
+		Path:   path,
+		Size:   0,
+		Width:  0,
 	}
+
+	imgFile.loadFileDimensions()
+	imgFile.loadFileInfo()
 
 	return &imgFile
 }
@@ -36,29 +48,11 @@ func IsImage(path string) bool {
 /* -------------------- Public Functions -------------------- */
 
 func (imgFile *ImageFile) BelowMinimumDimensions(minWidth, minHeight *int) bool {
-	width, height := imgFile.Dimensions()
-
-	if (width < *minWidth) || (height < *minHeight) {
+	if (imgFile.Width < *minWidth) || (imgFile.Height < *minHeight) {
 		return true
 	} else {
 		return false
 	}
-}
-
-func (imgFile *ImageFile) Dimensions() (width, height int) {
-	file, _ := os.Open(imgFile.Path)
-	defer file.Close()
-
-	if err != nil {
-		return
-	}
-
-	conf, _, err := image.DecodeConfig(file)
-	if err == nil {
-		width, height = conf.Width, conf.Height
-	}
-
-	return width, height
 }
 
 func (imgFile *ImageFile) GenerateHash() {
@@ -81,14 +75,15 @@ func (imgFile *ImageFile) HasGPS() bool {
 
 func (imgFile *ImageFile) LatLon() (lat, lon float64) {
 	file, err := os.Open(imgFile.Path)
-	if err != nil {
-		return lat, lon
-	}
 	defer file.Close()
+
+	if err != nil {
+		return
+	}
 
 	ex, err := exif.Decode(file)
 	if err != nil {
-		return lat, lon
+		return
 	}
 
 	lat, lon, _ = ex.LatLong()
@@ -98,6 +93,31 @@ func (imgFile *ImageFile) LatLon() (lat, lon float64) {
 
 /* -------------------- Private Functions -------------------- */
 
+func (imgFile *ImageFile) loadFileDimensions() {
+	file, err := os.Open(imgFile.Path)
+	defer file.Close()
+
+	if err != nil {
+		return
+	}
+
+	conf, _, err := image.DecodeConfig(file)
+	if err == nil {
+		imgFile.Width, imgFile.Height = conf.Width, conf.Height
+	}
+}
+
+func (imgFile *ImageFile) loadFileInfo() {
+	info, err := os.Stat(imgFile.Path)
+	if err == nil {
+		imgFile.Name = info.Name()
+		imgFile.Size = info.Size()
+	}
+}
+
+/*
+* This is a very expensive operation so it's deferred until absolutely needed
+ */
 func (imgFile *ImageFile) loadImage() {
 	if imgFile.Image == nil {
 		img, err := imagehash.OpenImg(imgFile.Path)

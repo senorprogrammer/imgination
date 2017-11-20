@@ -7,6 +7,7 @@ import (
 	"os"
 )
 
+// TODO: Find a way to unite this with ImageFile. No point in having two of these
 type ImageStat struct {
 	Width  int
 	Height int

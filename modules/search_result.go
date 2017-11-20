@@ -1,9 +1,16 @@
 package modules
 
-import ()
+import (
+	"sort"
+)
 
 type SearchResult struct {
 	Results []string
+}
+
+func (searchResult *SearchResult) Sorted() []string {
+	sort.Strings(searchResult.Results)
+	return searchResult.Results
 }
 
 func (searchResult *SearchResult) Append(result string) {

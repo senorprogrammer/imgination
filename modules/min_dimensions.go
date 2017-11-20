@@ -34,5 +34,5 @@ func FindMinimumDimensions(dirPath *string, minWidth, minHeight *int) {
 		return nil
 	})
 
-	Render(&searchResult)
+	RenderTui(&searchResult)
 }

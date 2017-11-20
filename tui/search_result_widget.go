@@ -2,6 +2,8 @@ package tui
 
 import (
 	"fmt"
+	"os"
+	"os/exec"
 	_ "strconv"
 
 	"github.com/jroimartin/gocui"
@@ -56,6 +58,10 @@ func (widget *SearchResultWidget) Layout(g *gocui.Gui) error {
 			panic(err)
 		}
 
+		if err := g.SetKeybinding(widget.name, gocui.KeyEnter, gocui.ModNone, widget.openFile); err != nil {
+			panic(err)
+		}
+
 		g.SetCurrentView(widget.name)
 
 		// Render the file list
@@ -96,6 +102,14 @@ func (widget *SearchResultWidget) cursorDown(g *gocui.Gui, v *gocui.View) error 
 				return err
 			}
 		}
+	}
+	return nil
+}
+
+func (widget *SearchResultWidget) openFile(g *gocui.Gui, v *gocui.View) error {
+	path := widget.body[widget.selected]
+	if err := exec.Command("open", path).Run(); err != nil {
+		return err
 	}
 	return nil
 }

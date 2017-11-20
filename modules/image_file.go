@@ -45,23 +45,30 @@ func (imgFile *ImageFile) BelowMinimumDimensions(minWidth, minHeight *int) bool 
 	}
 }
 
+func (imgFile *ImageFile) Dimensions() (width, height int) {
+	file, _ := os.Open(imgFile.Path)
+	defer file.Close()
+
+	if err != nil {
+		return
+	}
+
+	conf, _, err := image.DecodeConfig(file)
+	if err == nil {
+		width, height = conf.Width, conf.Height
+	}
+
+	return width, height
+}
+
 func (imgFile *ImageFile) GenerateHash() {
-	imgFile.LoadImage()
+	imgFile.loadImage()
 
 	bytes, err := imagehash.Ahash(imgFile.Image, 16)
 	if err == nil {
 		imgFile.Hash = hex.EncodeToString(bytes)
 	}
 
-}
-
-func (imgFile *ImageFile) Dimensions() (width, height int) {
-	imgFile.LoadImage()
-
-	size := imgFile.Image.Bounds().Size()
-	width, height = size.X, size.Y
-
-	return width, height
 }
 
 func (imgFile *ImageFile) HasGPS() bool {
@@ -91,7 +98,7 @@ func (imgFile *ImageFile) LatLon() (lat, lon float64) {
 
 /* -------------------- Private Functions -------------------- */
 
-func (imgFile *ImageFile) LoadImage() {
+func (imgFile *ImageFile) loadImage() {
 	if imgFile.Image == nil {
 		img, err := imagehash.OpenImg(imgFile.Path)
 		if err != nil {

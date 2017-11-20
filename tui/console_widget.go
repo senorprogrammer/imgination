@@ -39,7 +39,7 @@ func (widget *ConsoleWidget) Layout(g *gocui.Gui) error {
 		view.SelFgColor = gocui.ColorBlack
 		view.Wrap = false
 
-		fmt.Fprintln(view, "<D>elete | <O>pen | <Q>uit ")
+		fmt.Fprintln(view, "<DEL> Delete | <RET> Open | <Ctl-C> Quit ")
 	}
 
 	return nil

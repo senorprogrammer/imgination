@@ -2,7 +2,7 @@ package tui
 
 import (
 	"fmt"
-	_ "os"
+	"os"
 	"os/exec"
 	_ "strconv"
 
@@ -58,6 +58,10 @@ func (widget *SearchResultWidget) Layout(g *gocui.Gui) error {
 			panic(err)
 		}
 
+		if err := g.SetKeybinding(widget.name, gocui.KeyDelete, gocui.ModNone, widget.deleteFile); err != nil {
+			panic(err)
+		}
+
 		if err := g.SetKeybinding(widget.name, gocui.KeyEnter, gocui.ModNone, widget.openFile); err != nil {
 			panic(err)
 		}
@@ -102,6 +106,14 @@ func (widget *SearchResultWidget) cursorDown(g *gocui.Gui, v *gocui.View) error 
 				return err
 			}
 		}
+	}
+	return nil
+}
+
+func (widget *SearchResultWidget) deleteFile(g *gocui.Gui, v *gocui.View) error {
+	path := widget.body[widget.selected]
+	if err := os.Remove(path); err != nil {
+		return err
 	}
 	return nil
 }

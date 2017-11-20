@@ -2,7 +2,7 @@ package tui
 
 import (
 	"fmt"
-	"os"
+	_ "os"
 	"os/exec"
 	_ "strconv"
 

@@ -2,10 +2,6 @@ package tui
 
 import (
 	"fmt"
-	"image"
-	_ "image/jpeg"
-	_ "image/png"
-	"os"
 
 	"github.com/dustin/go-humanize"
 	"github.com/jroimartin/gocui"
@@ -32,7 +28,8 @@ func NewInfoWidget(name, title, path string) *InfoWidget {
 }
 
 func (widget *InfoWidget) DisplayFile(path string) {
-	stat := NewImageStat(path)
+	widget.Path = path
+	stat := NewImageStat(widget.Path)
 	widget.ImageStat = stat
 }
 
@@ -60,6 +57,8 @@ func (widget *InfoWidget) Layout(g *gocui.Gui) error {
 	infoView.Wrap = false
 
 	infoView.Clear()
+	fmt.Fprint(infoView, InlineImage(infoView, widget.Path))
+	// fmt.Print(InlineImage(infoView, widget.Path))
 
 	return nil
 }

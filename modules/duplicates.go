@@ -46,7 +46,7 @@ func FindDuplicates(dirPath *string) {
 		}
 	}
 
-	Render(&searchResult)
+	RenderTui(&searchResult)
 }
 
 /* -------------------- Private -------------------- */

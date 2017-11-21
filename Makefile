@@ -1,4 +1,5 @@
 install:
+	go get
 	go clean
 	go install
 

@@ -4,8 +4,8 @@ install:
 	go install
 
 run:
-	go run cointel.go --format=table --persist=true
+	go run imgination.go
 
 clean:
 	go clean
-	rm -f cointel
+	rm -f imgination
